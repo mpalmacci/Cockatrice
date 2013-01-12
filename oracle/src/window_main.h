@@ -15,14 +15,14 @@ class QMenu;
 class QAction;
 class QNetworkAccessManager;
 
-class WindowMain : public QMainWindow {
+class WindowMain: public QMainWindow {
 	Q_OBJECT
 private:
 	static const QString defaultSetsUrl;
-	
+
 	OracleImporter *importer;
 	QNetworkAccessManager *nam;
-	
+
 	QMenu *fileMenu;
 	QAction *aLoadSetsFile, *aDownloadSetsFile, *aExit;
 	QPushButton *checkAllButton, *uncheckAllButton, *startButton;
@@ -32,9 +32,8 @@ private:
 	QVBoxLayout *checkBoxLayout;
 	QList<QCheckBox *> checkBoxList;
 	QLabel *statusLabel;
-	
-	void downloadSetsFile(const QString &url);
-private slots:
+
+	void downloadSetsFile(const QString &url);private slots:
 	void updateTotalProgress(int cardsImported, int setIndex, const QString &nextSetName);
 	void updateFileProgress(int bytesRead, int totalBytes);
 	void updateSetList();

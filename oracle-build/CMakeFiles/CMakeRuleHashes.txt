@@ -1,0 +1,5 @@
+# Hashes of file build rules.
+e8d2e46a4bca725d414decd11cb0797b __/cockatrice/src/moc_carddatabase.cxx
+b76b2469183e239031ad5e64a8046bcc __/cockatrice/src/moc_settingscache.cxx
+adb5dba47c51afc642eafba729c8d287 src/moc_oracleimporter.cxx
+a9eab8668d8c7c88e75bf130bddc5a7c src/moc_window_main.cxx

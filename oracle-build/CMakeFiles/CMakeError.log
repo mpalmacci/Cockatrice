@@ -1,0 +1,84 @@
+Determining if the Q_WS_X11 exist failed with the following output:
+Change Dir: /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec305402111/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec305402111.dir/build.make CMakeFiles/cmTryCompileExec305402111.dir/build
+"/Applications/CMake 2.8-10.app/Contents/bin/cmake" -E cmake_progress_report /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec305402111.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++    -F/Library/Frameworks    -o CMakeFiles/cmTryCompileExec305402111.dir/CheckSymbolExists.cxx.o -c /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function 'int main(int, char**)':
+/Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8: error: 'Q_WS_X11' was not declared in this scope
+make[1]: *** [CMakeFiles/cmTryCompileExec305402111.dir/CheckSymbolExists.cxx.o] Error 1
+make: *** [cmTryCompileExec305402111/fast] Error 2
+
+File /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_X11
+  return ((int*)(&Q_WS_X11))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_WIN exist failed with the following output:
+Change Dir: /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec2327571510/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2327571510.dir/build.make CMakeFiles/cmTryCompileExec2327571510.dir/build
+"/Applications/CMake 2.8-10.app/Contents/bin/cmake" -E cmake_progress_report /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2327571510.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++    -F/Library/Frameworks    -o CMakeFiles/cmTryCompileExec2327571510.dir/CheckSymbolExists.cxx.o -c /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function 'int main(int, char**)':
+/Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8: error: 'Q_WS_WIN' was not declared in this scope
+make[1]: *** [CMakeFiles/cmTryCompileExec2327571510.dir/CheckSymbolExists.cxx.o] Error 1
+make: *** [cmTryCompileExec2327571510/fast] Error 2
+
+File /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_WIN
+  return ((int*)(&Q_WS_WIN))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_QWS exist failed with the following output:
+Change Dir: /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec4271907072/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec4271907072.dir/build.make CMakeFiles/cmTryCompileExec4271907072.dir/build
+"/Applications/CMake 2.8-10.app/Contents/bin/cmake" -E cmake_progress_report /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec4271907072.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++    -F/Library/Frameworks    -o CMakeFiles/cmTryCompileExec4271907072.dir/CheckSymbolExists.cxx.o -c /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function 'int main(int, char**)':
+/Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8: error: 'Q_WS_QWS' was not declared in this scope
+make[1]: *** [CMakeFiles/cmTryCompileExec4271907072.dir/CheckSymbolExists.cxx.o] Error 1
+make: *** [cmTryCompileExec4271907072/fast] Error 2
+
+File /Users/mpalmacci/Documents/workspace/Cockatrice/oracle-build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_QWS
+  return ((int*)(&Q_WS_QWS))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+

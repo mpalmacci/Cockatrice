@@ -5,21 +5,20 @@
 #include <QDomDocument>
 #include <QDebug>
 
-OracleImporter::OracleImporter(const QString &_dataDir, QObject *parent)
-	: CardDatabase(parent), dataDir(_dataDir), setIndex(-1)
-{
+OracleImporter::OracleImporter(const QString &_dataDir, QObject *parent) :
+		CardDatabase(parent), dataDir(_dataDir), setIndex(-1) {
 	buffer = new QBuffer(this);
 	http = new QHttp(this);
-	connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(httpRequestFinished(int, bool)));
-	connect(http, SIGNAL(responseHeaderReceived(const QHttpResponseHeader &)), this, SLOT(readResponseHeader(const QHttpResponseHeader &)));
-	connect(http, SIGNAL(dataReadProgress(int, int)), this, SIGNAL(dataReadProgress(int, int)));
+connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(httpRequestFinished(int, bool)));
+connect(http, SIGNAL(responseHeaderReceived(const QHttpResponseHeader &)), this, SLOT(readResponseHeader(const QHttpResponseHeader &)));
+connect(http, SIGNAL(dataReadProgress(int, int)), this, SIGNAL(dataReadProgress(int, int)));
 }
 
-bool OracleImporter::readSetsFromFile(const QString &fileName)
-{
+bool OracleImporter::readSetsFromFile(const QString &fileName) {
 	QFile setsFile(fileName);
 	if (!setsFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		QMessageBox::critical(0, tr("Error"), tr("Cannot open file '%1'.").arg(fileName));
+		QMessageBox::critical(0, tr("Error"),
+				tr("Cannot open file '%1'.").arg(fileName));
 		return false;
 	}
 
@@ -27,16 +26,14 @@ bool OracleImporter::readSetsFromFile(const QString &fileName)
 	return readSetsFromXml(xml);
 }
 
-bool OracleImporter::readSetsFromByteArray(const QByteArray &data)
-{
+bool OracleImporter::readSetsFromByteArray(const QByteArray &data) {
 	QXmlStreamReader xml(data);
 	return readSetsFromXml(xml);
 }
 
-bool OracleImporter::readSetsFromXml(QXmlStreamReader &xml)
-{
-	QList<SetToDownload> newSetList;
-	
+bool OracleImporter::readSetsFromXml(QXmlStreamReader &xml) {
+	QList < SetToDownload > newSetList;
+
 	QString edition;
 	QString editionLong;
 	QString editionURL;
@@ -56,7 +53,8 @@ bool OracleImporter::readSetsFromXml(QXmlStreamReader &xml)
 				else if (xml.name() == "url")
 					editionURL = xml.readElementText();
 			}
-			newSetList.append(SetToDownload(edition, editionLong, editionURL, import));
+			newSetList.append(
+					SetToDownload(edition, editionLong, editionURL, import));
 			edition = editionLong = editionURL = QString();
 		} else if (xml.name() == "picture_url")
 			pictureUrl = xml.readElementText();
@@ -73,16 +71,10 @@ bool OracleImporter::readSetsFromXml(QXmlStreamReader &xml)
 	return true;
 }
 
-CardInfo *OracleImporter::addCard(const QString &setName,
-								  QString cardName,
-								  bool isToken,
-								  int cardId,
-								  const QString &cardCost,
-								  const QString &cardType,
-								  const QString &cardPT,
-								  int cardLoyalty,
-								  const QStringList &cardText)
-{
+CardInfo *OracleImporter::addCard(const QString &setName, QString cardName,
+		bool isToken, int cardId, const QString &cardCost,
+		const QString &cardType, const QString &cardPT, int cardLoyalty,
+		const QStringList &cardText) {
 	QString fullCardText = cardText.join("\n");
 	bool splitCard = false;
 	if (cardName.contains('(')) {
@@ -93,7 +85,7 @@ CardInfo *OracleImporter::addCard(const QString &setName,
 	if (cardName.contains("XX"))
 		cardName.remove("XX");
 	cardName = cardName.replace("Æ", "AE");
-        cardName = cardName.replace("’", "'");
+	cardName = cardName.replace("’", "'");
 
 	CardInfo *card;
 	if (cardHash.contains(cardName)) {
@@ -104,15 +96,17 @@ CardInfo *OracleImporter::addCard(const QString &setName,
 		bool mArtifact = false;
 		if (cardType.endsWith("Artifact"))
 			for (int i = 0; i < cardText.size(); ++i)
-				if (cardText[i].contains("{T}") && cardText[i].contains("to your mana pool"))
+				if (cardText[i].contains("{T}")
+						&& cardText[i].contains("to your mana pool"))
 					mArtifact = true;
-					
+
 		QStringList colors;
-		QStringList allColors = QStringList() << "W" << "U" << "B" << "R" << "G";
+		QStringList allColors = QStringList() << "W" << "U" << "B" << "R"
+				<< "G";
 		for (int i = 0; i < allColors.size(); i++)
 			if (cardCost.contains(allColors[i]))
 				colors << allColors[i];
-		
+
 		if (cardText.contains(cardName + " is white."))
 			colors << "W";
 		if (cardText.contains(cardName + " is blue."))
@@ -123,10 +117,12 @@ CardInfo *OracleImporter::addCard(const QString &setName,
 			colors << "R";
 		if (cardText.contains(cardName + " is green."))
 			colors << "G";
-		
-		bool cipt = (cardText.contains(cardName + " enters the battlefield tapped."));
-		
-		card = new CardInfo(this, cardName, isToken, cardCost, cardType, cardPT, fullCardText, colors, cardLoyalty, cipt);
+
+		bool cipt = (cardText.contains(
+				cardName + " enters the battlefield tapped."));
+
+		card = new CardInfo(this, cardName, isToken, cardCost, cardType, cardPT,
+				fullCardText, colors, cardLoyalty, cipt);
 		int tableRow = 1;
 		QString mainCardType = card->getMainCardType();
 		if ((mainCardType == "Land") || mArtifact)
@@ -136,20 +132,22 @@ CardInfo *OracleImporter::addCard(const QString &setName,
 		else if (mainCardType == "Creature")
 			tableRow = 2;
 		card->setTableRow(tableRow);
-		
+
 		cardHash.insert(cardName, card);
 	}
-	card->setPicURL(setName, getPictureUrl(pictureUrl, cardId, cardName, setName));
-	card->setPicURLHq(setName, getPictureUrl(pictureUrlHq, cardId, cardName, setName));
-	card->setPicURLSt(setName, getPictureUrl(pictureUrlSt, cardId, cardName, setName));
+	card->setPicURL(setName,
+			getPictureUrl(pictureUrl, cardId, cardName, setName));
+	card->setPicURLHq(setName,
+			getPictureUrl(pictureUrlHq, cardId, cardName, setName));
+	card->setPicURLSt(setName,
+			getPictureUrl(pictureUrlSt, cardId, cardName, setName));
 	return card;
 }
 
-int OracleImporter::importTextSpoiler(CardSet *set, const QByteArray &data)
-{
+int OracleImporter::importTextSpoiler(CardSet *set, const QByteArray &data) {
 	int cards = 0;
 	QString bufferContents(data);
-	
+
 	// Workaround for ampersand bug in text spoilers
 	int index = -1;
 	while ((index = bufferContents.indexOf('&', index + 1)) != -1) {
@@ -159,12 +157,13 @@ int OracleImporter::importTextSpoiler(CardSet *set, const QByteArray &data)
 			index += 4;
 		}
 	}
-	
+
 	QDomDocument doc;
 	QString errorMsg;
 	int errorLine, errorColumn;
 	if (!doc.setContent(bufferContents, &errorMsg, &errorLine, &errorColumn))
-		qDebug() << "error:" << errorMsg << "line:" << errorLine << "column:" << errorColumn;
+		qDebug() << "error:" << errorMsg << "line:" << errorLine << "column:"
+				<< errorColumn;
 
 	QDomNodeList divs = doc.elementsByTagName("div");
 	for (int i = 0; i < divs.size(); ++i) {
@@ -174,7 +173,7 @@ int OracleImporter::importTextSpoiler(CardSet *set, const QByteArray &data)
 			QString cardName, cardCost, cardType, cardPT, cardText;
 			int cardId = 0;
 			int cardLoyalty = 0;
-			
+
 			QDomNodeList trs = div.elementsByTagName("tr");
 			for (int j = 0; j < trs.size(); ++j) {
 				QDomElement tr = trs.at(j).toElement();
@@ -183,21 +182,28 @@ int OracleImporter::importTextSpoiler(CardSet *set, const QByteArray &data)
 					QStringList cardTextSplit = cardText.split("\n");
 					for (int i = 0; i < cardTextSplit.size(); ++i)
 						cardTextSplit[i] = cardTextSplit[i].trimmed();
-					
-					CardInfo *card = addCard(set->getShortName(), cardName, false, cardId, cardCost, cardType, cardPT, cardLoyalty, cardTextSplit);
+
+					CardInfo *card = addCard(set->getShortName(), cardName,
+							false, cardId, cardCost, cardType, cardPT,
+							cardLoyalty, cardTextSplit);
 					if (!set->contains(card)) {
 						card->addToSet(set);
 						cards++;
 					}
-					cardName = cardCost = cardType = cardPT = cardText = QString();
+					cardName = cardCost = cardType = cardPT = cardText =
+							QString();
 				} else {
 					QString v1 = tds.at(0).toElement().text().simplified();
-					QString v2 = tds.at(1).toElement().text().replace(trUtf8("—"), "-");
-					
+					QString v2 = tds.at(1).toElement().text().replace(
+							trUtf8("—"), "-");
+
 					if (v1 == "Name:") {
-						QDomElement a = tds.at(1).toElement().elementsByTagName("a").at(0).toElement();
-						QString href = a.attributes().namedItem("href").nodeValue();
-						cardId = href.mid(href.indexOf("multiverseid=") + 13).toInt();
+						QDomElement a = tds.at(1).toElement().elementsByTagName(
+								"a").at(0).toElement();
+						QString href =
+								a.attributes().namedItem("href").nodeValue();
+						cardId =
+								href.mid(href.indexOf("multiverseid=") + 13).toInt();
 						cardName = v2.simplified();
 					} else if (v1 == "Cost:")
 						cardCost = v2.simplified();
@@ -208,7 +214,8 @@ int OracleImporter::importTextSpoiler(CardSet *set, const QByteArray &data)
 					else if (v1 == "Rules Text:")
 						cardText = v2.trimmed();
 					else if (v1 == "Loyalty:")
-						cardLoyalty = v2.trimmed().remove('(').remove(')').toInt();
+						cardLoyalty =
+								v2.trimmed().remove('(').remove(')').toInt();
 				}
 			}
 			break;
@@ -217,53 +224,55 @@ int OracleImporter::importTextSpoiler(CardSet *set, const QByteArray &data)
 	return cards;
 }
 
-QString OracleImporter::getPictureUrl(QString url, int cardId, QString name, const QString &setName) const
-{
-	if ((name == "Island") || (name == "Swamp") || (name == "Mountain") || (name == "Plains") || (name == "Forest"))
+QString OracleImporter::getPictureUrl(QString url, int cardId, QString name,
+		const QString &setName) const {
+	if ((name == "Island") || (name == "Swamp") || (name == "Mountain")
+			|| (name == "Plains") || (name == "Forest"))
 		name.append("1");
-	return url.replace("!cardid!", QString::number(cardId)).replace("!set!", setName).replace("!name!", name
-		.replace("ö", "o")
+	return url.replace("!cardid!", QString::number(cardId)).replace("!set!",
+			setName).replace("!name!", name.replace("ö", "o")
 //		.remove('\'')
-		.remove(" // ")
+	.remove(" // ")
 //		.remove(',')
 //		.remove(':')
 //		.remove('.')
-		.remove(QRegExp("\\(.*\\)"))
-		.simplified()
+	.remove(QRegExp("\\(.*\\)")).simplified()
 //		.replace(' ', '_')
 //		.replace('-', '_')
-	);
+			);
 }
 
-int OracleImporter::startDownload()
-{
+int OracleImporter::startDownload() {
 	clear();
-	
+
 	setsToDownload.clear();
 	for (int i = 0; i < allSets.size(); ++i)
 		if (allSets[i].getImport())
 			setsToDownload.append(allSets[i]);
-	
+
 	if (setsToDownload.isEmpty())
 		return 0;
 	setIndex = 0;
 	emit setIndexChanged(0, 0, setsToDownload[0].getLongName());
-	
+
 	downloadNextFile();
 	return setsToDownload.size();
 }
 
-void OracleImporter::downloadNextFile()
-{
+void OracleImporter::downloadNextFile() {
 	QString urlString = setsToDownload[setIndex].getUrl();
 	if (urlString.isEmpty())
 		urlString = setUrl;
-	urlString = urlString.replace("!longname!", setsToDownload[setIndex].getLongName());
+	urlString = urlString.replace("!longname!",
+			setsToDownload[setIndex].getLongName());
 	if (urlString.startsWith("http://")) {
 		QUrl url(urlString);
-		http->setHost(url.host(), QHttp::ConnectionModeHttp, url.port() == -1 ? 0 : url.port());
-		QString path = QUrl::toPercentEncoding(urlString.mid(url.host().size() + 7).replace(' ', '+'), "?!$&'()*+,;=:@/");
-		
+		http->setHost(url.host(), QHttp::ConnectionModeHttp,
+				url.port() == -1 ? 0 : url.port());
+		QString path = QUrl::toPercentEncoding(
+				urlString.mid(url.host().size() + 7).replace(' ', '+'),
+				"?!$&'()*+,;=:@/");
+
 		buffer->close();
 		buffer->setData(QByteArray());
 		buffer->open(QIODevice::ReadWrite | QIODevice::Text);
@@ -271,7 +280,7 @@ void OracleImporter::downloadNextFile()
 	} else {
 		QFile file(dataDir + "/" + urlString);
 		file.open(QIODevice::ReadOnly | QIODevice::Text);
-		
+
 		buffer->close();
 		buffer->setData(file.readAll());
 		buffer->open(QIODevice::ReadWrite | QIODevice::Text);
@@ -280,8 +289,7 @@ void OracleImporter::downloadNextFile()
 	}
 }
 
-void OracleImporter::httpRequestFinished(int requestId, bool error)
-{
+void OracleImporter::httpRequestFinished(int requestId, bool error) {
 	if (error) {
 		QMessageBox::information(0, tr("HTTP"), tr("Error."));
 		return;
@@ -289,36 +297,39 @@ void OracleImporter::httpRequestFinished(int requestId, bool error)
 	if (requestId != reqId)
 		return;
 
-	CardSet *set = new CardSet(setsToDownload[setIndex].getShortName(), setsToDownload[setIndex].getLongName());
+	CardSet *set = new CardSet(setsToDownload[setIndex].getShortName(),
+			setsToDownload[setIndex].getLongName());
 	if (!setHash.contains(set->getShortName()))
 		setHash.insert(set->getShortName(), set);
-	
+
 	buffer->seek(0);
 	buffer->close();
 	int cards = importTextSpoiler(set, buffer->data());
 	++setIndex;
-	
+
 	if (setIndex == setsToDownload.size()) {
 		emit setIndexChanged(cards, setIndex, QString());
 		setIndex = -1;
 	} else {
 		downloadNextFile();
-		emit setIndexChanged(cards, setIndex, setsToDownload[setIndex].getLongName());
+		emit setIndexChanged(cards, setIndex,
+				setsToDownload[setIndex].getLongName());
 	}
 }
 
-void OracleImporter::readResponseHeader(const QHttpResponseHeader &responseHeader)
-{
+void OracleImporter::readResponseHeader(
+		const QHttpResponseHeader &responseHeader) {
 	switch (responseHeader.statusCode()) {
-		case 200:
-		case 301:
-		case 302:
-		case 303:
-		case 307:
-			break;
-		default:
-			QMessageBox::information(0, tr("HTTP"), tr("Download failed: %1.").arg(responseHeader.reasonPhrase()));
-			http->abort();
-			deleteLater();
+	case 200:
+	case 301:
+	case 302:
+	case 303:
+	case 307:
+		break;
+	default:
+		QMessageBox::information(0, tr("HTTP"),
+				tr("Download failed: %1.").arg(responseHeader.reasonPhrase()));
+		http->abort();
+		deleteLater();
 	}
 }
